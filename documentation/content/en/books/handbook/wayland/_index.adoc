@@ -4,7 +4,7 @@ part: Part I. Getting Started
 prev: books/handbook/x11
 next: books/handbook/network
 description: This chapter describes how to install and configure Wayland and compositors on FreeBSD, which provides a graphical user environment
-tags: ["Wayland", "XWayland", "KDE", "Plasma", "Xfce", "Gnome", "Intel", "AMD", "NVIDIA", "Wayfire", "Sway", "Hikari"]
+tags: ["Wayland", "XWayland", "KDE", "Plasma", "Xfce", "Gnome", "Intel", "AMD", "NVIDIA", "Wayfire", "Sway", "Hyprland, Niri, Labwc, Riverwm, dwl"]
 showBookMenu: true
 weight: 8
 params:
@@ -79,7 +79,7 @@ First, Wayland is only a protocol that acts as an intermediary between clients u
 Xorg includes both the X11 protocol, used to run remote displays, and the X server, used to accept connections and display windows.
 Under Wayland, the compositor or window manager provides the display server instead of a traditional X server.
 
-Since Wayland is not an X server, traditional X screen connections will need to utilize other methods such as VNC or RDP for remote desktop management.
+Since Wayland is not an X server, traditional X screen connections will need to use other methods such as VNC or RDP for remote desktop management.
 Second, Wayland can manage composite communications between clients and a compositor as a separate entity which does not need to support the X protocols.
 
 Wayland is relatively new, and not all software has been updated to run natively without `Xwayland` support.
@@ -89,7 +89,7 @@ The `-rootless` parameter, when removed, will restore X11 window manager support
 [NOTE]
 ====
 The current NVIDIA(R) driver should work with most wlroots compositors, but it may be a little unstable and not support all features at this time.
-Volunteers to help work on the NVIDIA(R) DRM are requested.
+Volunteers to help work on the NVIDIA(R) DRM are requested. Kernel Modesetting (crossref:glossary[kms-glossary,KMS]) is required to run a Wayland environment on FreeBSD with NVIDIA(R) DRM.
 ====
 
 Currently, a lot of software will function with minimal issues on Wayland, including Firefox.
@@ -283,92 +283,144 @@ The [.filename]#wayfire.ini# file is highly recommended to be backed up so any e
 
 Finally, the default launcher listed in the [.filename]#wayfire.ini# is package:x11/wf-shell[] which may be replaced with other panels if desired by the user.
 
-[[wayland-hikari]]
-== The Hikari Compositor
+[[wayland-hyprland]]
+== The Hyprland Compositor
+Hyprland prioritizes delivering the latest Wayland-specfic features, with a focus on dynamic workspace management, eyecandy, and IPC, with a large plugin ecosystem. 
 
-The Hikari compositor uses several concepts centered around productivity, such as sheets, workspaces, and more.
-In that way, it resembles a tiling window manager.
-Breaking this down, the compositor starts with a single workspace, which is similar to virtual desktops.
-Hikari uses a single workspace or virtual desktop for user interaction. The workspace is made up of several views, which are the working windows in the compositor grouped as either sheets or groups.
-Both sheets and groups are made up of a collection of views; again, the windows that are grouped together.
-When switching between sheets or groups, the active sheet or group will become known collectively as the workspace.
-The manual page will break this down into more information on the functions of each but for this document, just consider a single workspace utilizing a single sheet.
-Hikari installation will comprise of a single package, package:x11-wm/hikari[], and a terminal emulator `alacritty`:
+The compositor starts with a set amount of workspaces, each of which house windows that are auto-tiled according to user-defined workspace rules. 
+Hyprland's workspaces are lined up horizontally, and can be grouped together depending on the display they should be on. 
+Workspaces and monitors both support special workspaces, where a Wayland layer above the selected workspace can house additional windows which can be hidden or shown as needed, with those windows being grouped together.
 
+Hyprland supports screen tearing and touchpad gestures for laptop users, as well as automatic configuration reloading upon changes.
+The wiki page breaks down the configuration file into the functions of each section, but for this document, we will just consider 
+a basic Hyprland installation.
+
+A basic Hyprland installation is as follows, 
 [source,shell]
 ----
-# pkg install hikari alacritty
+# pkg install hyprland hyprpaper hyprpicker xdg-desktop-portal-hyprland kitty
 ----
 
-[NOTE]
+[WARNING]
 ====
-Other shells, such as `kitty` or the Plasma `Terminal`, will function under Wayland. Users should experiment with their favorite terminal editor to validate compatibility.
+Hyprland's development team does not officially support NVIDIA hardware. However, the Hyprland wiki has instructions on how to configure Hyprland with NVIDIA hardware.
 ====
 
-Hikari uses a configuration file, [.filename]#hikari.conf#, which could either be placed in the XDG_RUNTIME_DIR or specified on startup using the `-c` parameter.
-An autostart configuration file is not required but may make the migration to this compositor a little easier.
-Beginning the configuration is to create the Hikari configuration directory and copy over the configuration file for editing:
-
+To get started, simply run,
 [source,shell]
 ----
-% mkdir ~/.config/hikari
-% cp /usr/local/etc/hikari/hikari.conf ~/.config/hikari
+% start-hyprland
 ----
+Ths will start Hyprland, which will auto-generate a configuration file at `~/.config/hypr/hyprland.conf`, and generates  a GUI prompt with instructions on how to configure the compositor for general use. A list of applicatons is listed that are both required for a functioning desktop, such as status bars, Polkit agents, and application launchers, and nice-to-haves like notificaton daemons, wallpaper utilities, and clipboard managers. 
 
-The configuration is broken out into various stanzas such as ui, outputs, layouts, and more.
-For most users, the defaults will function fine; however, some important changes should be made.
-For example, the $TERMINAL variable is normally not set within the user's environment.
-Changing this variable or altering the [.filename]#hikari.conf# file to read:
+The configuration is well-commented and has documentation on what each section does. For most users, the default workspaces work fine; however some important changes should be made. For example, to autostart the Firefox web browser when starting Hyprland, add 
+[source,shell]
+----
+exec-once = firefox
+----
+You can use a `$` to create variables for use in multiple places, for example,
 
 [.programlisting]
 ....
-terminal = "/usr/local/bin/alacritty"
+$terminal = kitty
+$browser = firefox
 ....
 
-Will launch the `alacritty` terminal using the bound key press.
-While going through the configuration file, it should be noted that the capital letters are used to map keys out for the user.
-For example, the kbd:[L] key for starting the terminal kbd:[L+Return] is actually the previously discussed super key or Windows logo key.
-Therefore, holding the kbd:[L/super/Windows] key and pressing kbd:[Enter] will open the specified terminal emulator with the default configuration.
-Mapping other keys to applications require an action definition to be created.
-For this, the action item should be listed in the actions stanza, for example:
-
+To launch an application via keybinds, for example
 [.programlisting]
 ....
-actions {
-  terminal = "/usr/local/bin/alacritty"
-  browser = "/usr/local/bin/firefox"
+$mainMod = SUPER
+bind = $mainMod, Q, exec, $terminal
+....
+will open the kitty terminal when pressing the kbd:[Q] key and the kbd:[L/super/Windows] key.
+
+Since Hyprland automatically reads the newly edited configuration, the compositor does not need to restart to apply new changes. As Hyprland does not come with a status bar, it is recommended the user set up, at minimal, a status bar before migration. The wiki is a valuable resource that should be read before a migration, to understand how to create a full configuration file first. 
+
+Locking the compositor in Hyprland requires the `hyprlock` package. The configuration is not created automatically, and is required or else `hyprlock` will not render anything, so create a configuraton file `hyprlock.conf` in `XDG_CONFIG_HOME` (`~/.config/hypr`). 
+
+An example configuration is as follows,
+[.programlisting]
+....
+general {
+    no_fade_in = false
+    grace = 0
+    disable_loading = true
+}
+
+background {
+    monitor =
+    color = rgba(25, 20, 20, 1.0)
+    blur_passes = 0
+}
+
+label {
+    monitor =
+    color = rgba(200, 200, 200, 1.0)
+    font_size = 64
+    font_family = Sans
+    position = 0, 80
+    halign = center
+    valign = center
+}
+
+input-field {
+    monitor =
+    size = 200, 50
+    outline_thickness = 3
+    dots_size = 0.33
+    dots_spacing = 0.15
+    dots_center = true
+    outer_color = rgb(151515)
+    inner_color = rgb(200, 200, 200)
+    font_color = rgb(10, 10, 10)
+    fade_on_empty = true
+    placeholder_text = <i>Password...</i>
+    hide_input = false
+    position = 0, -20
+    halign = center
+    valign = center
 }
 ....
 
-Then an action may be mapped under the keyboard stanza, which is defined within the bindings stanza:
 
-[.programlisting]
-....
-bindings {
-  keyboard {
-SNIP
-    "L+Return" = action-terminal
-    "L+b" = action-browser
-SNIP
-....
-
-After Hikari is restarted, holding the Windows logo button and pressing the kbd:[b] key on the keyboard will start the web browser.
-The compositor does not have a menu bar, and it is recommended the user set up, at minimal, a terminal emulator before migration.
-The manual page contains a great deal of documentation it should be read before performing a full migration.
-Another positive aspect about Hikari is that, while migrating to the compositor, Hikari can be started in the Plasma and GNOME desktop environments, allowing for a test-drive before completely migrating.
-
-Locking the screen in Hikari is easy because a default [.filename]#pam.d# configuration file and unlock utility are bundled with the package.
-The key binding for locking the screen is kbd:[L] (Windows logo key)+ kbd:[Shift] + kbd:[Backspace].
-It should be noted that all views not marked public will be hidden.
-These views will never accept input when locked but beware of sensitive information being visible.
-For some users, it may be easier to migrate to a different screen locking utility such as swaylock-effects, discussed in this section.
-To start Hikari, use the following command:
-
+The `hyprlock` configuration will go into effect as soon as you update it, so execute
 [source,shell]
 ----
-% hikari -c ~/.config/hikari/hikari.conf
+% hyprlock
 ----
+in a terminal to test your configuration
 
+To exit Hyprland if required, execute
+[source,shell]
+----
+% hyprctl dispatch exit
+----
+Many settings can be checked and changed using `hyprctl`, Hyprland's command-line interface. To display monitors for example,
+[source,shell]
+----
+% hyprctl monitors
+----
+Or Wayland clients, 
+[source,shell]
+----
+% hyprctl clients
+----
+Finally, many legacy X11-based programs do not have an interface for Wayland, so you will need to configure Xwayland. Hyprland requires configuation for Xwayland in its config file, as follows,
+[.programlisting]
+....
+# change monitor to high resolution, the last argument is the scale factor
+monitor = , highres, auto, 2
+
+# unscale XWayland
+xwayland {
+  force_zero_scaling = true
+}
+
+# toolkit-specific scale
+env = GDK_SCALE,2
+env = XCURSOR_SIZE,32
+....
+This will ensure applications run properly in Xwayland while still preserving a uniform environment across your desktop.
 [[wayland-sway]]
 == The Sway Compositor
 
