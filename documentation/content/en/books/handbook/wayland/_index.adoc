@@ -506,6 +506,51 @@ To start Sway, issue the following command:
 % sway -c ~/.config/sway/config
 ----
 
+
+[[wayland-labwc]]
+== The Labwc Compositor
+
+Labwc is a compositor that aims to bring the workflow and modularity of the Openbox X window manager to Wayland. It is very lightweight, and fully independent, with a focus on minimalism and simple stacking window management. It relies on clients for screenshots, wallpapers, etc to form a full desktop environment. It is also toolkit independent, so it does not require vast dependences to be installed at runtime.
+
+Since Labwc aims to be minimal, only a base install and configuration of Labwc is covered. Begin by installing the necessary packages,
+[source,shell]
+----
+# pkg install labwc alacritty  
+----
+
+You will require `alacritty`, since at first launch Labwc will show an option to open a terminal using `alacritty` when right-clicking for further testing. 
+
+Labwc configuration uses XML configuraton files. For example, to bind a keyboard shortcut to an action such as opening a terminal, create the file `~/.config/labwc/rc.xml` and add the following XML,
+
+[.programlisting]
+....
+<?xml version="1.0" ?>
+<labwc_config>
+  <keyboard>
+    <default />
+    <!-- The W- prefix refers to the Super key -->
+    <keybind key="W-q">
+      <action name="Execute" command="alacritty" />
+    </keybind>
+    <keybind key="W-f">
+      <action name="Execute" command="firefox" />
+    </keybind>
+  </keyboard>
+</labwc_config>
+....
+This will bind the Windows logo key and `q` to start `alacritty` and Windows logo key and `f` to start `firefox`.
+
+The defaults for most users should be fine. The compositor will require a restart upon any configuration changes, which can by done by right-clicking anywhere and clicking exit.
+
+Start the compositor by simply typing,
+
+[source,shell]
+----
+% labwc
+----
+This starts the compositor. You can run Labwc in either a TTY or as a nested compositor inside another session, which is valuable for testing. Right click anywhere to open `alacritty`.
+
+
 [[wayland-xwayland]]
 == Using Xwayland
 
