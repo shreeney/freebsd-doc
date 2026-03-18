@@ -311,7 +311,7 @@ To get started, simply run,
 ----
 % start-hyprland
 ----
-Ths will start Hyprland, which will auto-generate a configuration file at `~/.config/hypr/hyprland.conf`, and generates  a GUI prompt with instructions on how to configure the compositor for general use. A list of applicatons is listed that are both required for a functioning desktop, such as status bars, Polkit agents, and application launchers, and nice-to-haves like notificaton daemons, wallpaper utilities, and clipboard managers. 
+Ths will start Hyprland, which will auto-generate a configuration file at `~/.config/hypr/hyprland.conf`, and generates  a GUI prompt with instructions on how to configure the compositor for general use. A list of applications is listed that are both required for a functioning desktop, such as status bars, Polkit agents, and application launchers, and nice-to-haves like notificaton daemons, wallpaper utilities, and clipboard managers. 
 
 The configuration is well-commented and has documentation on what each section does. For most users, the default workspaces work fine; however some important changes should be made. For example, to autostart the Firefox web browser when starting Hyprland, add 
 [source,shell]
