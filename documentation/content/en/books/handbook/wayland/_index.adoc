@@ -311,7 +311,7 @@ To get started, simply run,
 ----
 % start-hyprland
 ----
-Ths will start Hyprland, which will auto-generate a configuration file at `~/.config/hypr/hyprland.conf`, and generates  a GUI prompt with instructions on how to configure the compositor for general use. A list of applications is listed that are both required for a functioning desktop, such as status bars, Polkit agents, and application launchers, and nice-to-haves like notificaton daemons, wallpaper utilities, and clipboard managers. 
+Ths will start Hyprland, which will auto-generate a configuration file at `~/.config/hypr/hyprland.conf`, and generates  a GUI prompt with instructions on how to configure the compositor for general use. A list of applicatons is listed that are both required for a functioning desktop, such as status bars, Polkit agents, and application launchers, and nice-to-haves like notificaton daemons, wallpaper utilities, and clipboard managers. 
 
 The configuration is well-commented and has documentation on what each section does. For most users, the default workspaces work fine; however some important changes should be made. For example, to autostart the Firefox web browser when starting Hyprland, add 
 [source,shell]
@@ -405,22 +405,7 @@ Or Wayland clients,
 ----
 % hyprctl clients
 ----
-Finally, many legacy X11-based programs do not have an interface for Wayland, so you will need to configure Xwayland. Hyprland requires configuation for Xwayland in its config file, as follows,
-[.programlisting]
-....
-# change monitor to high resolution, the last argument is the scale factor
-monitor = , highres, auto, 2
 
-# unscale XWayland
-xwayland {
-  force_zero_scaling = true
-}
-
-# toolkit-specific scale
-env = GDK_SCALE,2
-env = XCURSOR_SIZE,32
-....
-This will ensure applications run properly in Xwayland while still preserving a uniform environment across your desktop.
 [[wayland-sway]]
 == The Sway Compositor
 
@@ -584,9 +569,24 @@ Even so, it is recommended to manually add a configuration line in the [.filenam
 xwayland enable
 .....
 
-Finally, for Hikari, no changes are needed.
-Support for `Xwayland` is built in by default.
-To disable that support, rebuild the package from the ports collection and disable Xwayland support at that time.
+For the Hyprland compositor, Hyprland requires configuation for Xwayland in its config file, as follows,
+[.programlisting]
+....
+# change monitor to high resolution, the last argument is the scale factor
+monitor = , highres, auto, 2
+
+# unscale XWayland
+xwayland {
+  force_zero_scaling = true
+}
+
+# toolkit-specific scale
+env = GDK_SCALE,2
+env = XCURSOR_SIZE,32
+....
+This will ensure applications run properly in Xwayland while still preserving a uniform environment across your desktop.
+
+For Labwc, support is built-in to the compositor, just the Xwayland binary is required. 
 
 After these changes are made, start the compositor at the command line and execute a terminal from the key bindings.
 Within this terminal, issue the `env` command and search for the `DISPLAY` variables.
