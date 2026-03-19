@@ -495,7 +495,7 @@ To start Sway, issue the following command:
 [[wayland-labwc]]
 == The Labwc Compositor
 
-Labwc is a compositor that aims to bring the workflow and modularity of the Openbox X window manager to Wayland. It is very lightweight, and fully independent, with a focus on minimalism and simple stacking window management. It relies on clients for screenshots, wallpapers, etc to form a full desktop environment. It is also toolkit independent, so it does not require vast dependences to be installed at runtime.
+Labwc is a compositor that aims to bring the workflow and modularity of the Openbox X window manager to Wayland. It is very lightweight, and fully independent, with a focus on minimalism and simple stacking window management. It relies on clients for screenshots, wallpapers, etc to form a full desktop environment. It is also toolkit independent, so it does not require vast dependencies to be installed at runtime.
 
 Since Labwc aims to be minimal, only a base install and configuration of Labwc is covered. Begin by installing the necessary packages,
 [source,shell]
@@ -535,6 +535,14 @@ Start the compositor by simply typing,
 ----
 This starts the compositor. You can run Labwc in either a TTY or as a nested compositor inside another session, which is valuable for testing. Right click anywhere to open `alacritty`.
 
+[[wayland-other]]
+== Other compositors 
+There are many other compositor available in the FreeBSD Ports Collection. A non-exhaustive list of compositors is provided below,
+
+* dwl - dwm-like window manager for Wayland based on `wlroots`.
+* Weston - reference design for Wayland compositors.
+* Hikari - stacking window manger based on `wlroots` with special tiling and workspaces.
+* Gamescope - microcompositor intended for isolating single applications within a nested session.
 
 [[wayland-xwayland]]
 == Using Xwayland
