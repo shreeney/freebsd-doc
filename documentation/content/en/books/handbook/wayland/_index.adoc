@@ -4,7 +4,7 @@ part: Part I. Getting Started
 prev: books/handbook/x11
 next: books/handbook/network
 description: This chapter describes how to install and configure Wayland and compositors on FreeBSD, which provides a graphical user environment
-tags: ["Wayland", "XWayland", "KDE", "Plasma", "Xfce", "Gnome", "Intel", "AMD", "NVIDIA", "Wayfire", "Sway", "Hyprland, Niri, Labwc, Riverwm, dwl"]
+tags: ["Wayland", "XWayland", "KDE", "Plasma", "Xfce", "Gnome", "Intel", "AMD", "NVIDIA", "Wayfire", "Hikari", "Sway", "Hyprland", "Niri", "Labwc", "Riverwm", "dwl"]
 showBookMenu: true
 weight: 8
 params:
@@ -283,6 +283,92 @@ The [.filename]#wayfire.ini# file is highly recommended to be backed up so any e
 
 Finally, the default launcher listed in the [.filename]#wayfire.ini# is package:x11/wf-shell[] which may be replaced with other panels if desired by the user.
 
+[[wayland-hikari]]
+== The Hikari Compositor
+
+The Hikari compositor uses several concepts centered around productivity, such as sheets, workspaces, and more.
+In that way, it resembles a tiling window manager.
+Breaking this down, the compositor starts with a single workspace, which is similar to virtual desktops.
+Hikari uses a single workspace or virtual desktop for user interaction. The workspace is made up of several views, which are the working windows in the compositor grouped as either sheets or groups.
+Both sheets and groups are made up of a collection of views; again, the windows that are grouped together.
+When switching between sheets or groups, the active sheet or group will become known collectively as the workspace.
+The manual page will break this down into more information on the functions of each but for this document, just consider a single workspace utilizing a single sheet.
+Hikari installation will comprise of a single package, package:x11-wm/hikari[], and a terminal emulator `alacritty`:
+
+[source,shell]
+----
+# pkg install hikari alacritty
+----
+
+[NOTE]
+====
+Other shells, such as `kitty` or the Plasma `Terminal`, will function under Wayland. Users should experiment with their favorite terminal editor to validate compatibility.
+====
+
+Hikari uses a configuration file, [.filename]#hikari.conf#, which could either be placed in the XDG_RUNTIME_DIR or specified on startup using the `-c` parameter.
+An autostart configuration file is not required but may make the migration to this compositor a little easier.
+Beginning the configuration is to create the Hikari configuration directory and copy over the configuration file for editing:
+
+[source,shell]
+----
+% mkdir ~/.config/hikari
+% cp /usr/local/etc/hikari/hikari.conf ~/.config/hikari
+----
+
+The configuration is broken out into various stanzas such as ui, outputs, layouts, and more.
+For most users, the defaults will function fine; however, some important changes should be made.
+For example, the $TERMINAL variable is normally not set within the user's environment.
+Changing this variable or altering the [.filename]#hikari.conf# file to read:
+
+[.programlisting]
+....
+terminal = "/usr/local/bin/alacritty"
+....
+
+Will launch the `alacritty` terminal using the bound key press.
+While going through the configuration file, it should be noted that the capital letters are used to map keys out for the user.
+For example, the kbd:[L] key for starting the terminal kbd:[L+Return] is actually the previously discussed super key or Windows logo key.
+Therefore, holding the kbd:[L/super/Windows] key and pressing kbd:[Enter] will open the specified terminal emulator with the default configuration.
+Mapping other keys to applications require an action definition to be created.
+For this, the action item should be listed in the actions stanza, for example:
+
+[.programlisting]
+....
+actions {
+  terminal = "/usr/local/bin/alacritty"
+  browser = "/usr/local/bin/firefox"
+}
+....
+
+Then an action may be mapped under the keyboard stanza, which is defined within the bindings stanza:
+
+[.programlisting]
+....
+bindings {
+  keyboard {
+SNIP
+    "L+Return" = action-terminal
+    "L+b" = action-browser
+SNIP
+....
+
+After Hikari is restarted, holding the Windows logo button and pressing the kbd:[b] key on the keyboard will start the web browser.
+The compositor does not have a menu bar, and it is recommended the user set up, at minimal, a terminal emulator before migration.
+The manual page contains a great deal of documentation it should be read before performing a full migration.
+Another positive aspect about Hikari is that, while migrating to the compositor, Hikari can be started in the Plasma and GNOME desktop environments, allowing for a test-drive before completely migrating.
+
+Locking the screen in Hikari is easy because a default [.filename]#pam.d# configuration file and unlock utility are bundled with the package.
+The key binding for locking the screen is kbd:[L] (Windows logo key)+ kbd:[Shift] + kbd:[Backspace].
+It should be noted that all views not marked public will be hidden.
+These views will never accept input when locked but beware of sensitive information being visible.
+For some users, it may be easier to migrate to a different screen locking utility such as swaylock-effects, discussed in this section.
+To start Hikari, use the following command:
+
+[source,shell]
+----
+% hikari -c ~/.config/hikari/hikari.conf
+----
+
 [[wayland-hyprland]]
 == The Hyprland Compositor
 Hyprland prioritizes delivering the latest Wayland-specfic features, with a focus on dynamic workspace management, eyecandy, and IPC, with a large plugin ecosystem. 
@@ -557,7 +643,7 @@ If the [.filename]#/usr/local/bin/Xwayland# file does not exist, install it usin
 
 [NOTE]
 ====
-The development version of Xwayland is recommended and was most likely installed with the Wayland package.
+The development version of Xwayland is rec ommended and was most likely installed with the Wayland package.
 Each compositor has a method of enabling or disabling this feature.
 ====
 
@@ -765,7 +851,7 @@ After a system reboot, a login should appear.
 To configure specific settings, such as language and edit [.filename]#/usr/local/etc/ly/config.ini#.
 At minimal, this file should have the designated tty that was previously specified in [.filename]#/etc/ttys#.
 
-[NOTE]
+[NOTE] 
 ====
 If setting ttyv0 up as the login terminal, it may be required to press the kbd:[alt] and kbd:[F1] keys to properly see the login window.
 ====
